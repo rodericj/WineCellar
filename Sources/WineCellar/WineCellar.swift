@@ -7,6 +7,7 @@ public class WineCellar: ObservableObject {
 
     @Published public var bottles: [Bottle] = []
     @Published public var error: WineError? = nil
+    @Published public var authenticatedSuccessfully: Bool = false
 
     public init() {}
 
@@ -18,6 +19,7 @@ public class WineCellar: ObservableObject {
         DispatchQueue.main.async {
             switch responseType {
             case .success(let bottles):
+                self.authenticatedSuccessfully = !bottles.isEmpty
                 self.bottles = bottles
             case .failure(let error):
                 self.error = error
