@@ -4,7 +4,9 @@ import Combine
 import ISO8859
 @available(iOS 13.0, *)
 public class WineCellar: ObservableObject {
-    @Published public var inventory: ResponseType = .pending
+
+    @Published public var bottles: [Bottle] = []
+    @Published public var error: WineError? = nil
 
     public init() {}
 
@@ -14,7 +16,15 @@ public class WineCellar: ObservableObject {
 
     private func updateInventory(responseType: ResponseType) {
         DispatchQueue.main.async {
-            self.inventory = responseType
+            switch responseType {
+            case .success(let bottles):
+                self.bottles = bottles
+            case .failure(let error):
+                self.error = error
+            case .pending:
+                self.error = nil
+                self.bottles = []
+            }
         }
     }
 
