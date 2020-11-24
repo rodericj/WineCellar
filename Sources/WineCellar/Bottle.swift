@@ -34,6 +34,15 @@ public struct Bottle: Decodable {
     let sortProducer: String
     let type: WineType // decodable?
 
+    let varietal: String
+    let masterVarietal: String
+    let designation: String
+    let vineyard: String
+    let ct: String?
+    let upc: String?
+    let beginConsume: Int?
+    let endConsume: Int?
+
     enum CodingKeys: String, CodingKey {
         case wineID = "iWine"
         case title = "Wine"
@@ -53,6 +62,14 @@ public struct Bottle: Decodable {
         case producer = "Producer"
         case sortProducer = "SortProducer"
         case type = "Type"
+        case varietal = "Varietal"
+        case masterVarietal = "MasterVarietal"
+        case designation = "Designation"
+        case vineyard = "Vineyard"
+        case ct = "CT"
+        case upc = "UPC"
+        case beginConsume = "BeginConsume"
+        case endConsume = "EndConsume"
     }
 }
 
