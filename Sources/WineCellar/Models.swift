@@ -6,6 +6,7 @@ public enum WineError: Error {
     case unableToReadCellarDirectory
     case unableToCreateCellarDirectory
     case unableToMoveDownloadedDataToStorage
+    case unableToRemoveCachedWineList
     case unknown(Error)
 }
 

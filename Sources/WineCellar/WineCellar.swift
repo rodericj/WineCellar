@@ -25,6 +25,15 @@ public class WineCellar {
         return localCSVDirectory?.appendingPathComponent(fileName).appendingPathExtension(fileExtension)
     }
 
+    private func removeExistingWineList(from localCSVURL: URL, with fileManager: FileManager) {
+        do {
+            try fileManager.removeItem(at: localCSVURL)
+        } catch {
+            self.inventory = .failure(.unableToRemoveCachedWineList)
+            // non fatal error, keep it going
+        }
+    }
+
     public func refreshCellar(uname: String, password: String, forceRefresh: Bool = false) {
         // fetch from URL
         guard let cellarTrackerURL = URL(string: "https://www.cellartracker.com/xlquery.asp?User=\(uname)&Password=\(password)&Format=csv&Table=List&Location=1") else {
@@ -32,9 +41,14 @@ public class WineCellar {
         }
 
         let fileManager = FileManager.default
-        if let localCSVURL = localCSVURL,
-           !forceRefresh,
-           fileManager.fileExists(atPath: localCSVURL.relativePath) {
+
+        guard let localCSVURL = localCSVURL else {
+            self.inventory = .failure(.unableToReadCellarDirectory)
+            return
+        }
+        if forceRefresh {
+            removeExistingWineList(from: localCSVURL, with: fileManager)
+        } else if fileManager.fileExists(atPath: localCSVURL.relativePath) {
             debugPrint("this file exists and we aren't forcing a refresh. Use the local file")
             readWineList(from: localCSVURL)
             return
