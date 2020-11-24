@@ -12,10 +12,16 @@ public class WineCellar: ObservableObject {
     private let fileName = "cellar"
     private let fileExtension = "csv"
 
+    private func updateInventory(responseType: ResponseType) {
+        DispatchQueue.main.async {
+            self.inventory = responseType
+        }
+    }
+
     private var localCSVDirectory: URL? {
         let fileManager = FileManager.default
         guard let docsDirs = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
-            inventory = .failure(.unableToReadDocumentsDirectory)
+            updateInventory(responseType: .failure(.unableToReadDocumentsDirectory))
             return nil
         }
         return docsDirs.appendingPathComponent(dataDirectorPath, isDirectory: true)
@@ -29,7 +35,7 @@ public class WineCellar: ObservableObject {
         do {
             try fileManager.removeItem(at: localCSVURL)
         } catch {
-            self.inventory = .failure(.unableToRemoveCachedWineList)
+            updateInventory(responseType: .failure(.unableToRemoveCachedWineList))
             // non fatal error, keep it going
         }
     }
@@ -43,7 +49,7 @@ public class WineCellar: ObservableObject {
         let fileManager = FileManager.default
 
         guard let localCSVURL = localCSVURL else {
-            self.inventory = .failure(.unableToReadCellarDirectory)
+            updateInventory(responseType: .failure(.unableToReadCellarDirectory))
             return
         }
         if forceRefresh {
@@ -55,20 +61,20 @@ public class WineCellar: ObservableObject {
         }
 
         guard let localCSVDirectory = localCSVDirectory else {
-            self.inventory = .failure(.unableToReadDocumentsDirectory)
+            updateInventory(responseType: .failure(.unableToReadDocumentsDirectory))
             return
         }
         do {
             try fileManager.createDirectory(at: localCSVDirectory, withIntermediateDirectories: true, attributes: nil)
         } catch {
-            self.inventory = .failure(.unableToCreateCellarDirectory)
+            updateInventory(responseType: .failure(.unableToCreateCellarDirectory))
         }
 
         debugPrint("fetching from the server")
 
         let task = URLSession.shared.downloadTask(with: cellarTrackerURL) { [weak self] (url, response, error)  in
             if let error = error {
-                self?.inventory = .failure(.unknown(error))
+                self?.updateInventory(responseType: .failure(.unknown(error)))
             }
             if let url = url, let localURL = self?.localCSVURL {
                 do {
@@ -78,7 +84,7 @@ public class WineCellar: ObservableObject {
                     self?.readWineList(from: localURL)
                 } catch {
                     debugPrint("some kind of failure, unable to move")
-                    self?.inventory = .failure(.unknown(error))
+                    self?.updateInventory(responseType: .failure(.unknown(error)))
                 }
             }
         }
@@ -89,7 +95,7 @@ public class WineCellar: ObservableObject {
         do {
             let iso88591Data = try Data(contentsOf: localCSVURL)
             guard let csvString = String(iso88591Data, iso8859Encoding: ISO8859.part1) else {
-                inventory = .failure(.unableToParseWineList)
+                updateInventory(responseType: .failure(.unableToParseWineList))
                 return
             }
             let csv = try CSVReader(string: csvString, hasHeaderRow: true)
@@ -99,9 +105,9 @@ public class WineCellar: ObservableObject {
                 let row = try! decoder.decode(Bottle.self, from: csv)
                 bottles.append(row)
             }
-            inventory = .success(bottles)
+            updateInventory(responseType: .success(bottles))
         } catch {
-            inventory = .failure(.unknown(error))
+            updateInventory(responseType: .failure(.unknown(error)))
         }
     }
 }
