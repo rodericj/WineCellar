@@ -7,41 +7,40 @@
 
 import Foundation
 
-enum WineType: String, Decodable {
+public enum WineType: String, Decodable {
     case red = "Red"
     case white = "White"
     case whiteSweetDessert = "White - Sweet/Dessert"
 }
 
 public struct Bottle: Decodable {
-    let wineID: String
-    let title: String
-    let location: String
-    let price: Float
-    let vintage: String
-    let quantity: Int
-    let wineBarcode: String
-    let size: String
-    let valuation: Float
+    public let wineID: String
+    public let title: String
+    public let location: String
+    public let price: Float
+    public let vintage: String
+    public let quantity: Int
+    public let wineBarcode: String
+    public let size: String
+    public let valuation: Float
+    public let currency: String
+    public let locale: String
+    public let country: String
+    public let region: String
+    public let subRegion: String
+    public let appellation: String
+    public let producer: String
+    public let sortProducer: String
+    public let type: WineType
 
-    let currency: String
-    let locale: String
-    let country: String
-    let region: String
-    let subRegion: String
-    let appellation: String
-    let producer: String
-    let sortProducer: String
-    let type: WineType // decodable?
-
-    let varietal: String
-    let masterVarietal: String
-    let designation: String
-    let vineyard: String
-    let ct: String?
-    let upc: String?
-    let beginConsume: Int?
-    let endConsume: Int?
+    public let varietal: String
+    public let masterVarietal: String
+    public let designation: String
+    public let vineyard: String
+    public let ct: String?
+    public let upc: String?
+    public let beginConsume: Int?
+    public let endConsume: Int?
 
     enum CodingKeys: String, CodingKey {
         case wineID = "iWine"
