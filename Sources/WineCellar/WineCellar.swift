@@ -8,42 +8,87 @@ public class WineCellar {
 
     public init() {}
 
-    public func refreshCellar(uname: String, password: String) {
-        // fetch from URL
+    private let dataDirectorPath = "cellarTracker/"
+    private let fileName = "cellar"
+    private let fileExtension = "csv"
 
-        guard let url = URL(string: "https://www.cellartracker.com/xlquery.asp?User=\(uname)&Password=\(password)&Format=csv&Table=List&Location=1") else {
+    private var localCSVDirectory: URL? {
+        let fileManager = FileManager.default
+        guard let docsDirs = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            inventory = .failure(.unableToReadDocumentsDirectory)
+            return nil
+        }
+        return docsDirs.appendingPathComponent(dataDirectorPath, isDirectory: true)
+    }
+
+    private var localCSVURL: URL? {
+        return localCSVDirectory?.appendingPathComponent(fileName).appendingPathExtension(fileExtension)
+    }
+
+    public func refreshCellar(uname: String, password: String, forceRefresh: Bool = false) {
+        // fetch from URL
+        guard let cellarTrackerURL = URL(string: "https://www.cellartracker.com/xlquery.asp?User=\(uname)&Password=\(password)&Format=csv&Table=List&Location=1") else {
             fatalError()
         }
 
-        let task = URLSession.shared.downloadTask(with: url) { [weak self] (url, response, error)  in
+        let fileManager = FileManager.default
+        if let localCSVURL = localCSVURL,
+           !forceRefresh,
+           fileManager.fileExists(atPath: localCSVURL.relativePath) {
+            debugPrint("this file exists and we aren't forcing a refresh. Use the local file")
+            readWineList(from: localCSVURL)
+            return
+        }
+
+        guard let localCSVDirectory = localCSVDirectory else {
+            self.inventory = .failure(.unableToReadDocumentsDirectory)
+            return
+        }
+        do {
+            try fileManager.createDirectory(at: localCSVDirectory, withIntermediateDirectories: true, attributes: nil)
+        } catch {
+            self.inventory = .failure(.unableToCreateCellarDirectory)
+        }
+
+        debugPrint("fetching from the server")
+
+        let task = URLSession.shared.downloadTask(with: cellarTrackerURL) { [weak self] (url, response, error)  in
             if let error = error {
-                self?.inventory = .failure(error)
+                self?.inventory = .failure(.unknown(error))
             }
-            if let url = url {
+            if let url = url, let localURL = self?.localCSVURL {
                 do {
-                    let iso88591Data = try Data(contentsOf: url)
-                    guard let csvString = String(iso88591Data, iso8859Encoding: ISO8859.part1) else {
-                        self?.inventory = .failure(WineError.unableToParseWineList)
-                        return
-                    }
-                    let csv = try CSVReader(string: csvString, hasHeaderRow: true)
-                    let decoder = CSVRowDecoder()
-                    var bottles = [Bottle]()
-                    while csv.next() != nil {
-                        let row = try! decoder.decode(Bottle.self, from: csv)
-                        bottles.append(row)
-                    }
-                    self?.inventory = .success(bottles)
+                    debugPrint("moving the temp to \(localURL)")
+                    try fileManager.moveItem(at: url, to: localURL)
+                    debugPrint("we've moved it to \(localURL), now read it")
+                    self?.readWineList(from: localURL)
                 } catch {
-                    self?.inventory = .failure(error)
+                    debugPrint("some kind of failure, unable to move")
+                    self?.inventory = .failure(.unknown(error))
                 }
             }
         }
         task.resume()
     }
 
-    public func wines() throws {
-        print("Show the cached wines")
+    private func readWineList(from localCSVURL: URL) {
+        do {
+            let iso88591Data = try Data(contentsOf: localCSVURL)
+            guard let csvString = String(iso88591Data, iso8859Encoding: ISO8859.part1) else {
+                inventory = .failure(.unableToParseWineList)
+                return
+            }
+            let csv = try CSVReader(string: csvString, hasHeaderRow: true)
+            let decoder = CSVRowDecoder()
+            var bottles = [Bottle]()
+            while csv.next() != nil {
+                let row = try! decoder.decode(Bottle.self, from: csv)
+                bottles.append(row)
+            }
+            inventory = .success(bottles)
+        } catch {
+            inventory = .failure(.unknown(error))
+        }
     }
 }
 
@@ -51,7 +96,6 @@ extension WineCellar {
     private func data(element: URLSession.DataTaskPublisher.Output) throws -> Data {
         guard let httpResponse = element.response as? HTTPURLResponse,
               httpResponse.statusCode == 200 else {
-//            semaphore.signal()
             throw URLError(.badServerResponse)
         }
         return element.data
