@@ -3,7 +3,7 @@ import CSV
 import Combine
 import ISO8859
 @available(iOS 13.0, *)
-public class WineCellar {
+public class WineCellar: ObservableObject {
     @Published public var inventory: ResponseType = .pending
 
     public init() {}
