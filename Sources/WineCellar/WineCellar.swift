@@ -95,6 +95,7 @@ public class WineCellar: ObservableObject {
         do {
             let iso88591Data = try Data(contentsOf: localCSVURL)
             guard let csvString = String(iso88591Data, iso8859Encoding: ISO8859.part1) else {
+                debugPrint("unable to parse the list")
                 updateInventory(responseType: .failure(.unableToParseWineList))
                 return
             }
@@ -105,8 +106,10 @@ public class WineCellar: ObservableObject {
                 let row = try! decoder.decode(Bottle.self, from: csv)
                 bottles.append(row)
             }
+            debugPrint("successfully parsed the bottle list \(bottles)")
             updateInventory(responseType: .success(bottles))
         } catch {
+            debugPrint("failed with an error \(error)")
             updateInventory(responseType: .failure(.unknown(error)))
         }
     }
