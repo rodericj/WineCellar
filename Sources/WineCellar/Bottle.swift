@@ -15,7 +15,9 @@ public enum WineType: String, Decodable {
 
 
 public struct Bottle: Decodable {
-    init() {} 
+    public init(bottleTitle: String) {
+        self.title = bottleTitle
+    }
     public var wineID: String = ""
     public var title: String = "Test"
     public var location: String = ""
