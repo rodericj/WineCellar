@@ -16,6 +16,30 @@ public enum WineType: String, Decodable {
 
 public struct Bottle: Decodable {
 
+    init(wineID: String, title: String, location: String, price: Float, vintage: String, quantity: Int, wineBarcode: String, size: String, valuation: Float, currency: String, locale: String, country: String, region: String, subRegion: String, appellation: String, producer: String, sortProducer: String, type: WineType, varietal: String, masterVarietal: String, designation: String, vineyard: String) {
+        self.wineID = wineID
+        self.title = title
+        self.location = location
+        self.price = price
+        self.vintage = vintage
+        self.quantity = quantity
+        self.wineBarcode = wineBarcode
+        self.size = size
+        self.valuation = valuation
+        self.currency = currency
+        self.varietal = varietal
+        self.locale = locale
+        self.appellation = appellation
+        self.subRegion = subRegion
+        self.region = region
+        self.vineyard = vineyard
+        self.designation = designation
+        self.country = country
+        self.producer = producer
+        self.sortProducer = sortProducer
+        self.type = type
+        self.masterVarietal = masterVarietal
+    }
     public var wineID: String
     public var title: String
     public var location: String
