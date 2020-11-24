@@ -13,34 +13,35 @@ public enum WineType: String, Decodable {
     case whiteSweetDessert = "White - Sweet/Dessert"
 }
 
-public struct Bottle: Decodable {
-    public let wineID: String
-    public let title: String
-    public let location: String
-    public let price: Float
-    public let vintage: String
-    public let quantity: Int
-    public let wineBarcode: String
-    public let size: String
-    public let valuation: Float
-    public let currency: String
-    public let locale: String
-    public let country: String
-    public let region: String
-    public let subRegion: String
-    public let appellation: String
-    public let producer: String
-    public let sortProducer: String
-    public let type: WineType
 
-    public let varietal: String
-    public let masterVarietal: String
-    public let designation: String
-    public let vineyard: String
-    public let ct: String?
-    public let upc: String?
-    public let beginConsume: Int?
-    public let endConsume: Int?
+public struct Bottle: Decodable {
+    public var wineID: String = ""
+    public var title: String = "Test"
+    public var location: String = ""
+    public var price: Float = ""
+    public var vintage: String = ""
+    public var quantity: Int = 0
+    public var wineBarcode: String = ""
+    public var size: String = ""
+    public var valuation: Float = 0
+    public var currency: String = ""
+    public var locale: String = ""
+    public var country: String = ""
+    public var region: String = ""
+    public var subRegion: String = ""
+    public var appellation: String = ""
+    public var producer: String = ""
+    public var sortProducer: String = ""
+    public var type: WineType = .red
+
+    public var varietal: String = ""
+    public var masterVarietal: String = ""
+    public var designation: String = ""
+    public var vineyard: String = ""
+    public var ct: String?
+    public var upc: String?
+    public var beginConsume: Int?
+    public var endConsume: Int?
 
     enum CodingKeys: String, CodingKey {
         case wineID = "iWine"
