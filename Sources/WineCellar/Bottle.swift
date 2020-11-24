@@ -15,32 +15,30 @@ public enum WineType: String, Decodable {
 
 
 public struct Bottle: Decodable {
-    public init(bottleTitle: String) {
-        self.title = bottleTitle
-    }
-    public var wineID: String = ""
-    public var title: String = "Test"
-    public var location: String = ""
-    public var price: Float = 0
-    public var vintage: String = ""
-    public var quantity: Int = 0
-    public var wineBarcode: String = ""
-    public var size: String = ""
-    public var valuation: Float = 0
-    public var currency: String = ""
-    public var locale: String = ""
-    public var country: String = ""
-    public var region: String = ""
-    public var subRegion: String = ""
-    public var appellation: String = ""
-    public var producer: String = ""
-    public var sortProducer: String = ""
-    public var type: WineType = .red
 
-    public var varietal: String = ""
-    public var masterVarietal: String = ""
-    public var designation: String = ""
-    public var vineyard: String = ""
+    public var wineID: String
+    public var title: String
+    public var location: String
+    public var price: Float
+    public var vintage: String
+    public var quantity: Int
+    public var wineBarcode: String
+    public var size: String
+    public var valuation: Float
+    public var currency: String
+    public var locale: String
+    public var country: String
+    public var region: String
+    public var subRegion: String
+    public var appellation: String
+    public var producer: String
+    public var sortProducer: String
+    public var type: WineType
+
+    public var varietal: String
+    public var masterVarietal: String
+    public var designation: String
+    public var vineyard: String
     public var ct: String?
     public var upc: String?
     public var beginConsume: Int?
