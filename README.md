@@ -6,6 +6,13 @@ A Combine Publisher which provides your wine list from [CellarTracker.com
 One possible use case would be a swift script like the following:
 
 ``` swift
+import WineCellar
+import Foundation
+import Combine
+
+let cellar = WineCellar()
+let semaphore = DispatchSemaphore(value: 0)
+
 let cancellable = cellar.$inventory.sink { bottlesResult in
     switch bottlesResult {
     case .pending:
@@ -23,5 +30,9 @@ let _ = cellar.refreshCellar(uname: "roderic", password: "bananabananabanana")
 
 _ = semaphore.wait(timeout: .now() + 5)
 ```
+
+From the command line do this:
+
+` $> swift run`
 
 Should probably also make an app out of this.
