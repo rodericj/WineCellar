@@ -15,10 +15,11 @@ public enum WineType: String, Decodable {
 
 
 public struct Bottle: Decodable {
+    init() {} 
     public var wineID: String = ""
     public var title: String = "Test"
     public var location: String = ""
-    public var price: Float = ""
+    public var price: Float = 0
     public var vintage: String = ""
     public var quantity: Int = 0
     public var wineBarcode: String = ""
