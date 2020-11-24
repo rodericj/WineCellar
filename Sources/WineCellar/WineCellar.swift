@@ -93,17 +93,20 @@ public class WineCellar: ObservableObject {
 
     private func readWineList(from localCSVURL: URL) {
         do {
+            debugPrint("read contents from file")
             let iso88591Data = try Data(contentsOf: localCSVURL)
             guard let csvString = String(iso88591Data, iso8859Encoding: ISO8859.part1) else {
                 debugPrint("unable to parse the list")
                 updateInventory(responseType: .failure(.unableToParseWineList))
                 return
             }
+            debugPrint("begin parsing")
             let csv = try CSVReader(string: csvString, hasHeaderRow: true)
             let decoder = CSVRowDecoder()
             var bottles = [Bottle]()
             while csv.next() != nil {
                 let row = try! decoder.decode(Bottle.self, from: csv)
+                debugPrint("parsed \(row)")
                 bottles.append(row)
             }
             debugPrint("successfully parsed the bottle list \(bottles)")
