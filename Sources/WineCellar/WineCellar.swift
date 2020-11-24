@@ -106,8 +106,8 @@ public class WineCellar {
     }
 }
 
+@available(iOS 13.0, *)
 extension WineCellar {
-    @available(iOS 13.0, *)
     private func data(element: URLSession.DataTaskPublisher.Output) throws -> Data {
         guard let httpResponse = element.response as? HTTPURLResponse,
               httpResponse.statusCode == 200 else {
