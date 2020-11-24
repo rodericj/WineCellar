@@ -2,7 +2,7 @@ import Foundation
 import CSV
 import Combine
 import ISO8859
-
+@available(iOS 13.0, *)
 public class WineCellar {
     @Published public var inventory: ResponseType = .pending
 
@@ -107,6 +107,7 @@ public class WineCellar {
 }
 
 extension WineCellar {
+    @available(iOS 13.0, *)
     private func data(element: URLSession.DataTaskPublisher.Output) throws -> Data {
         guard let httpResponse = element.response as? HTTPURLResponse,
               httpResponse.statusCode == 200 else {
