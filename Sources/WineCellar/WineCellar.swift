@@ -19,6 +19,7 @@ public class WineCellar: ObservableObject {
     public func refreshAuthStatus() {
         if let localCSVURL = localCSVURL, fileManager.fileExists(atPath: localCSVURL.relativePath) {
             authenticatedSuccessfully = true
+            readWineList(from: localCSVURL)
         } else {
             authenticatedSuccessfully = false
         }
