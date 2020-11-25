@@ -9,11 +9,20 @@ public class WineCellar: ObservableObject {
     @Published public var error: WineError? = nil
     @Published public var authenticatedSuccessfully: Bool = false
 
+    private let fileManager = FileManager.default
     public init() {}
 
     private let dataDirectorPath = "cellarTracker/"
     private let fileName = "cellar"
     private let fileExtension = "csv"
+
+    public func refreshAuthStatus() {
+        if let localCSVURL = localCSVURL, fileManager.fileExists(atPath: localCSVURL.relativePath) {
+            authenticatedSuccessfully = true
+        } else {
+            authenticatedSuccessfully = false
+        }
+    }
 
     private func updateInventory(responseType: ResponseType) {
         DispatchQueue.main.async {
@@ -31,7 +40,6 @@ public class WineCellar: ObservableObject {
     }
 
     private var localCSVDirectory: URL? {
-        let fileManager = FileManager.default
         guard let docsDirs = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
             updateInventory(responseType: .failure(.unableToReadDocumentsDirectory))
             return nil
@@ -57,8 +65,6 @@ public class WineCellar: ObservableObject {
         guard let cellarTrackerURL = URL(string: "https://www.cellartracker.com/xlquery.asp?User=\(uname)&Password=\(password)&Format=csv&Table=List&Location=1") else {
             fatalError()
         }
-
-        let fileManager = FileManager.default
 
         guard let localCSVURL = localCSVURL else {
             updateInventory(responseType: .failure(.unableToReadCellarDirectory))
@@ -91,7 +97,7 @@ public class WineCellar: ObservableObject {
             if let url = url, let localURL = self?.localCSVURL {
                 do {
                     debugPrint("moving the temp to \(localURL)")
-                    try fileManager.moveItem(at: url, to: localURL)
+                    try self?.fileManager.moveItem(at: url, to: localURL)
                     debugPrint("we've moved it to \(localURL), now read it")
                     self?.readWineList(from: localURL)
                 } catch {
