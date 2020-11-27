@@ -4,6 +4,7 @@ public enum WineError: Error {
     case unableToParseWineList
     case unableToReadDocumentsDirectory
     case unableToReadCellarDirectory
+    case missingUsernameOrPassword
     case unableToCreateCellarDirectory
     case unableToMoveDownloadedDataToStorage
     case unableToRemoveCachedWineList

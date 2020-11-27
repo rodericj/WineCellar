@@ -2,6 +2,7 @@ import Foundation
 import CSV
 import Combine
 import ISO8859
+import KeychainAccess
 @available(iOS 13.0, *)
 public class WineCellar: ObservableObject {
 
@@ -60,10 +61,26 @@ public class WineCellar: ObservableObject {
             // non fatal error, keep it going
         }
     }
+    let keychain = Keychain(service: "io.thumbworks.winecellar")
 
-    public func refreshCellar(uname: String, password: String, forceRefresh: Bool = false) {
+    public func refreshCellar(uname: String, password: String) {
+        keychain[uname] = password
+        refresh(forceRefresh: true)
+    }
+
+    public func refresh(forceRefresh: Bool = false) {
+        guard let userName = keychain.allItems().compactMap({ item in
+            item["key"] as? String
+        }).first,
+        let password = keychain[userName] else {
+            print("couldn't find username or password in keychain, try again")
+            updateInventory(responseType: .failure(.missingUsernameOrPassword))
+            return
+        }
+        print("username fetched from keychain \(userName) \(password)")
+
         // fetch from URL
-        guard let cellarTrackerURL = URL(string: "https://www.cellartracker.com/xlquery.asp?User=\(uname)&Password=\(password)&Format=csv&Table=List&Location=1") else {
+        guard let cellarTrackerURL = URL(string: "https://www.cellartracker.com/xlquery.asp?User=\(userName)&Password=\(password)&Format=csv&Table=List&Location=1") else {
             fatalError()
         }
 
