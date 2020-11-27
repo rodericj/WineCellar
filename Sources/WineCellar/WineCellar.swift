@@ -63,6 +63,15 @@ public class WineCellar: ObservableObject {
     }
     let keychain = Keychain(service: "io.thumbworks.winecellar")
 
+    public func logout() {
+        try? keychain.removeAll()
+        guard let localCSVURL = localCSVURL else {
+            updateInventory(responseType: .failure(.unableToReadCellarDirectory))
+            return
+        }
+        removeExistingWineList(from: localCSVURL, with: fileManager)
+    }
+
     public func refreshCellar(uname: String, password: String) {
         keychain[uname] = password
         refresh(forceRefresh: true)
