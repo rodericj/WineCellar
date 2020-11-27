@@ -35,6 +35,7 @@ public class WineCellar: ObservableObject {
             case .failure(let error):
                 self.error = error
             case .pending:
+                self.authenticatedSuccessfully = false
                 self.error = nil
                 self.bottles = []
             }
@@ -56,6 +57,7 @@ public class WineCellar: ObservableObject {
     private func removeExistingWineList(from localCSVURL: URL, with fileManager: FileManager) {
         do {
             try fileManager.removeItem(at: localCSVURL)
+            updateInventory(responseType: .pending)
         } catch {
             updateInventory(responseType: .failure(.unableToRemoveCachedWineList))
             // non fatal error, keep it going
