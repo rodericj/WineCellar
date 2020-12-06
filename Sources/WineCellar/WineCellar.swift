@@ -75,14 +75,15 @@ public class WineCellar: ObservableObject {
     }
 
     public func refreshCellar(uname: String, password: String) {
-        keychain[uname] = password
+        let name = uname.replacingOccurrences(of: " ", with: "")
+        keychain[name] = password
         refresh(forceRefresh: true)
     }
 
     public func refresh(forceRefresh: Bool = false) {
         guard let userName = keychain.allItems().compactMap({ item in
             item["key"] as? String
-        }).first,
+        }).last,
         let password = keychain[userName] else {
             print("couldn't find username or password in keychain, try again")
             updateInventory(responseType: .failure(.missingUsernameOrPassword))
@@ -156,7 +157,7 @@ public class WineCellar: ObservableObject {
                 debugPrint("parsed \(row)")
                 bottles.append(row)
             }
-            debugPrint("successfully parsed the bottle list \(bottles)")
+            debugPrint("successfully parsed the bottle list \(bottles.count)")
             updateInventory(responseType: .success(bottles))
         } catch {
             debugPrint("failed with an error \(error)")

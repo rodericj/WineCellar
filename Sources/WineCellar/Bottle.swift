@@ -48,7 +48,7 @@ public struct Bottle: Decodable {
     public var quantity: Int
     public var wineBarcode: String
     public var size: String
-    public var valuation: Float
+    public var valuation: Float?
     public var currency: String
     public var locale: String
     public var country: String
@@ -100,6 +100,6 @@ public struct Bottle: Decodable {
 
 extension Bottle: CustomStringConvertible {
     public var description: String {
-        return "\n\(title) \(price) \(valuation) \(quantity), \(wineBarcode) \(size)"
+        return "\n\(title) \(price) \(valuation ?? 0) \(quantity), \(wineBarcode) \(size)"
     }
 }
