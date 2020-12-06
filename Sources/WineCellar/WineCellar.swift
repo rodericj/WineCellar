@@ -35,6 +35,9 @@ public class WineCellar: ObservableObject {
             case .failure(let error):
                 self.error = error
             case .pending:
+                self.error = nil
+                self.bottles = []
+            case .loggedOut:
                 self.authenticatedSuccessfully = false
                 self.error = nil
                 self.bottles = []
@@ -71,6 +74,7 @@ public class WineCellar: ObservableObject {
             updateInventory(responseType: .failure(.unableToReadCellarDirectory))
             return
         }
+        updateInventory(responseType: .loggedOut)
         removeExistingWineList(from: localCSVURL, with: fileManager)
     }
 

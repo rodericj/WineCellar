@@ -15,4 +15,5 @@ public enum ResponseType {
     case success([Bottle])
     case failure(WineError)
     case pending
+    case loggedOut
 }
