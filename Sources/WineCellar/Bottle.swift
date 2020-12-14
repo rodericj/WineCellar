@@ -42,7 +42,7 @@ public struct Bottle: Decodable {
     }
     public var wineID: String
     public var title: String
-    public var location: String
+    public var location: String?
     public var price: Float
     public var vintage: String
     public var quantity: Int
